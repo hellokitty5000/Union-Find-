@@ -14,11 +14,18 @@ namespace Union_Find_Aidan_McNabb
         {
             parents = new int[items.Count()];
             map = new Dictionary<T, int>(items.Count());
+            int count = 0;
+            foreach (var item in items)
+            {
+                map[item] = count;
+                parents[count] = count;
+                count++;
+            }
         }
         public int find(T first)
         {
-            int value = map[first];
-            while (parents[value] != 0)
+            int value = parents[map[first]];
+            while(value != parents[value])
             {
                 value = parents[value];
             }
@@ -26,12 +33,15 @@ namespace Union_Find_Aidan_McNabb
         }
         public bool union(T first, T second)
         {// if false then they were already in the same set
-            bool path = areConnected(first, second);
-            if(path)
+
+            var a = find(first);
+            var b = find(second);
+
+            if (a == b)
             {
                 return false;
             }
-            parents[find(second)] = map[first];
+            parents[b] = map[first];
             return true;
             
            
@@ -40,5 +50,19 @@ namespace Union_Find_Aidan_McNabb
         {
             return find(first) == find(second);
         }
+        private List<int> groupLeaders()
+        {
+            List<int> groupLeaders = new List<int>();
+            foreach (var item in map.Keys)
+            {
+                groupLeaders.Add(find(item));
+            }
+            return groupLeaders;
+        }
+
+        public int friendGroups => groupLeaders().Distinct().ToList().Count;
+        //list each person in all of the friend groups
+        //print largest and smallest group
+        //pass in a 0,1,2,3.... for which size group
     }
 }
